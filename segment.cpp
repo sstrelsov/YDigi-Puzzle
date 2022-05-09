@@ -1,4 +1,5 @@
 #include "segment.h"
+
 int segment_pins[] = {PIN_A,PIN_B,PIN_C,PIN_D,PIN_E,PIN_F,PIN_G,PIN_DEC}; 
 int digit_pins[] = {DIGIT_1,DIGIT_2,DIGIT_3,DIGIT_4};
 
@@ -17,23 +18,6 @@ int segment_digits[10][8] {
             {1,1,1,1,1,1,1,0}, // 8
             {1,1,1,1,0,1,1,0}, // 9
 };
-
-void segment_display_init () {
-  pinMode(PIN_A, OUTPUT);
-  pinMode(PIN_B, OUTPUT);
-  pinMode(PIN_C, OUTPUT);
-  pinMode(PIN_D, OUTPUT);
-  pinMode(PIN_E, OUTPUT);
-  pinMode(PIN_F, OUTPUT);
-  pinMode(PIN_G, OUTPUT);
-  pinMode(DIGIT_1, OUTPUT);
-  pinMode(DIGIT_2, OUTPUT);
-  pinMode(DIGIT_3, OUTPUT);
-  pinMode(DIGIT_4, OUTPUT);
-  pinMode(COM, OUTPUT); // must be included for colon in middle to function
-  pinMode(PIN_8, OUTPUT);
-  pinMode(PIN_DEC, OUTPUT);
-}
 
 void set_easy_time () {
   // TODO

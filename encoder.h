@@ -1,21 +1,19 @@
+#ifndef __ENCODER_H__
+#define __ENCODER_H__
+
 #include <stdbool.h>
-#include <arduino.h>
-#include "states.h"
-#include "pins.h"
+#include <Arduino.h>
 
-extern int selector;
-extern bool option_selected;
-extern bool settings_screen;
-extern int button_pin_prev;
-
-extern state current_state;
+#include "state_machine.h"
+#include "pins_setup.h"
 
 void encoder_ISR ();
 /*
  * Set the encoder pins to input, pulled up to logic 1.
  */
-void encoder_init ();
 
 bool state_changed (int curr_state, int *past_state);
 
-void update_selector (int a_state, int b_state, int *selector, int range);
+void update_curr_button (int a_state, int b_state, state_machine_t *s, int range);
+
+#endif

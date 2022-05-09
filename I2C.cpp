@@ -1,192 +1,142 @@
-#include <stdbool.h>
 #include "I2C.h"
-#include "encoder.h"
 
-Adafruit_SSD1306 disp(128, 64, &Wire);
-
+// Screen static pages
 void I2C_welcome_static ();
 void I2C_about_initial_static ();
 void I2C_about_second_static ();
 void I2C_about_third_static ();
 void I2C_difficulty_mode_static ();
 void I2C_help_static ();
-void I2C_about_initial_static ();
 void I2C_instruction_initial_static ();
+void I2C_instruction_second_static ();
+void I2C_instruction_third_static ();
+void I2C_instruction_fourth_static ();
+void I2C_instruction_fifth_static ();
+void I2C_instruction_sixth_static ();
+void I2C_instruction_seventh_static ();
+void I2C_instruction_eighth_static ();
 
-// Multi-page screen helpers
-void exit_state (int button_press, state *curr_state, state *prev_state, page *page_no);
-
-void blink_animation (int text_y, int selector);
-void hover_text (const char *str, int text_y, int highlight_length, int highlight_height, uint16_t hover_color);
-void display_text (int selector);
-void I2C_init_text (int text_size);
-void draw_arrow (uint16_t color, int dir);
-void hover_arrow (int dir);
+// Screen object helpers
 void draw_exit (uint16_t color);
-void hover_exit ();
+void draw_arrow (uint16_t color, int dir);
+void blink_animation (int text_y, int selector);
+void hover_text (const char *str, int text_y, state_machine_t *s);
 
-void I2C_init_text (int text_size, int y) {
-  disp.setTextSize(text_size);
-  disp.setTextColor(WHITE);
-  disp.setCursor(LEFT_INDENT,y);
-}
+// Text display helpers
+void I2C_init_static_text (const char *str, int size, int y_axis);
+void I2C_carousel_button_footer ();
 
-void I2C_init_display () {
-  disp.begin(SSD1306_SWITCHCAPVCC, 0x3c);  /* 0x3c is the I2C address */
-  disp.clearDisplay();
-  disp.display();
-}
-
-void I2C_welcome_screen (int selector, int button_press, state *curr_state, state *prev_state) {
+void I2C_welcome_screen (state_machine_t *s) {
   I2C_welcome_static();
-  switch (selector) {
+  switch (s->buttons->curr_button) {
     case ABOUT_BTN:
-      hover_text("About", ABOUT_CURSOR, ABOUT_HOVER_LENGTH, ABOUT_HOVER_HEIGHT, WHITE);
-      if (button_press == SINGLE) {
-        *curr_state = ABOUT;
-        *prev_state = WELCOME;
-      }
+      hover_text("About", 55, s);
+      state_switch(s, ABOUT);
       break;
-    case NEXT_ARROW:
+    case RIGHT_ARROW:
       hover_arrow(RIGHT);
-      if (button_press == SINGLE) {
-        *curr_state = DIFFICULTY_MODE;
-        *prev_state = WELCOME;
-      }
+      state_switch(s, DIFFICULTY_MODE);
       break;
   }
   disp.display();
 }
 
-void I2C_about_screen (int selector, int button_press, state *curr_state, state *prev_state, page *page_no) {
-  switch (*page_no) {
-    case PAGE_ZERO:
+void I2C_about_screen (state_machine_t *s) {
+  s->pages->last_page = 2;
+  switch (s->pages->curr_page) {
+    case 0:
       I2C_about_initial_static();
-      switch (selector) {
-        case LEFT_ARROW:
-          hover_arrow(LEFT);
-          if (button_press == SINGLE) {
-            *page_no = PAGE_TWO;
-          }
-          break;
-        case EXIT_BTN:
-          exit_state(button_press, curr_state, prev_state, page_no);
-          break;
-        case RIGHT_ARROW:
-          hover_arrow(RIGHT);
-          if (button_press == SINGLE) {
-            *page_no = PAGE_ONE;            
-          }
-          break;
-      }
       break;
-    case PAGE_ONE:
+    case 1:
       I2C_about_second_static();
-      switch (selector) {
-        case LEFT_ARROW:
-          hover_arrow(LEFT);
-          if (button_press == SINGLE) {
-            *page_no = PAGE_ZERO;            
-          }
-          break;
-        case EXIT_BTN:
-          exit_state(button_press, curr_state, prev_state, page_no);
-        break;
-        case RIGHT_ARROW:
-        hover_arrow(RIGHT);
-        if (button_press == SINGLE) {
-          *page_no = PAGE_TWO;
-        }
-        break;
-     }
-     break;
-    case PAGE_TWO:
+      break;
+    case 2:
       I2C_about_third_static();
-      switch (selector) {
-        case LEFT_ARROW:
-          hover_arrow(LEFT);
-          if (button_press == SINGLE) {
-            *page_no = PAGE_ONE;
-          }
-          break;
-        case EXIT_BTN:
-          exit_state(button_press, curr_state, prev_state, page_no);
-          break;
-        case RIGHT_ARROW:
-          hover_arrow(RIGHT);
-          if (button_press == SINGLE) {
-            *page_no = PAGE_ZERO;
-          }
-          break;
-      }
       break;  
     }
+  page_switch(s);
   disp.display();
 }
 
-void I2C_difficulty_mode_screen (int selector, int button_press, state *curr_state, state *prev_state) {
-  // Call the generic selection screen, with no highlighted figures
+void I2C_difficulty_mode_screen (state_machine_t *s) {
+  // Call the generic selection screen, with no highlighted buttons. Simulates buttons hovering over a normal screen.
   I2C_difficulty_mode_static();
-  switch (selector) {
+  switch (s->buttons->curr_button) {
     case EASY_BTN:
-      hover_text("Easy", EASY_CURSOR, DIFFICULTY_MODE_HOVER_LENGTH, DIFFICULTY_MODE_HOVER_HEIGHT, WHITE);
+      hover_text("Easy", 20, s);
       break;
     case MED_BTN:
-      hover_text("Medium", MED_CURSOR, DIFFICULTY_MODE_HOVER_LENGTH, DIFFICULTY_MODE_HOVER_HEIGHT, WHITE);
+      hover_text("Medium", 29, s);
       break;
     case HARD_BTN:
-      hover_text("Hard", HARD_CURSOR, DIFFICULTY_MODE_HOVER_LENGTH, DIFFICULTY_MODE_HOVER_HEIGHT, WHITE);
+      hover_text("Hard", 37, s);
       break;
     case FREE_MODE_BTN:
-      hover_text("Free Mode", FREE_MODE_CURSOR, DIFFICULTY_MODE_HOVER_LENGTH, DIFFICULTY_MODE_HOVER_HEIGHT, WHITE);
+      hover_text("Free Mode", 45, s);
       break;
   }
-  // Display the newly selected option
+  // Display the screen with button hover
   disp.display();
 }
 
-void I2C_help_screen (int *selector, int button_press, state *curr_state, state *prev_state, page *page_no) {
+void I2C_help_screen (state_machine_t *s) {
   I2C_help_static();
-  switch (*selector) {
+  switch (s->buttons->curr_button) {
     case ABOUT_BTN:
-      hover_text("About", ABOUT_HELP_CURSOR, HELP_HOVER_LENGTH, HELP_HOVER_HEIGHT, WHITE);
-      if (button_press == SINGLE) {
-        *curr_state = ABOUT;
-        *page_no = PAGE_ZERO;
-      }
-      break; 
-    case RESET_BTN:
-      hover_text("Reset", RESET_CURSOR, HELP_HOVER_LENGTH, HELP_HOVER_HEIGHT, WHITE);
-      if (button_press == SINGLE) {
-        *curr_state = WELCOME;
-        *prev_state = WELCOME;
-        *page_no = PAGE_ZERO;
-        *selector = 0;
-      }
+      hover_text("About", 20, s);
+      state_switch(s,ABOUT);
       break;
     case INSTR_BTN:
-      hover_text("Instructions", INSTR_CURSOR, HELP_HOVER_LENGTH, HELP_HOVER_HEIGHT, WHITE);
-      if (button_press == SINGLE) {
-        *curr_state = INSTRUCTIONS;
-      }
+      hover_text("Instructions", 29, s);
+      state_switch(s,INSTRUCTIONS);
+      break; 
+    case RESET_BTN:
+      hover_text("Reset", 37, s);
+      state_switch(s,WELCOME);
       break;
     case BACK_BTN:
-      hover_text("Back", BACK_CURSOR, HELP_HOVER_LENGTH, HELP_HOVER_HEIGHT, WHITE);
-      if (button_press == SINGLE) {
-        *curr_state = *prev_state;
-      }
+      hover_text("Back", 45, s);
+      state_switch(s,s->states->pre_help_curr_state);
       break;
   }
+  // Display the screen with button hover
   disp.display();
 }
 
-void I2C_instruction_selection_0 (int selector) {
- // if (selector == EXIT
- // switch (page_no)
-//  I2C_instruction_initial_static();
-  // TODO: Switch statement to switch between next, back, and exit buttons
+void I2C_instruction_screen (state_machine_t *s) {
+  // Set page count (0-indexed) to correctly switch pages
+  s->pages->last_page = 7;
+  // Switch the static screen, all include the left, exit, and right arrow buttons at bottom
+  switch (s->pages->curr_page) {
+    case 0:
+      I2C_instruction_initial_static();
+      break;
+    case 1:
+      I2C_instruction_second_static();
+      break;
+    case 2:
+      I2C_instruction_third_static();
+      break;
+    case 3:
+      I2C_instruction_fourth_static();
+      break;
+    case 4:
+      I2C_instruction_fifth_static();
+      break;
+    case 5:
+      I2C_instruction_sixth_static();
+      break;
+    case 6:
+      I2C_instruction_seventh_static();
+      break;
+    case 7:
+      I2C_instruction_eighth_static();
+      break;
+    }
+  // Switches page based on which button was pressed
+  page_switch(s);
+  disp.display();
 }
-
  /*************************************************************************
  *
  *  Static Screen Helper Functions:
@@ -198,137 +148,178 @@ void I2C_instruction_selection_0 (int selector) {
  **************************************************************************
  */
 
-void I2C_welcome_static () {
-  // Welcome header text
-  disp.clearDisplay();
-  I2C_init_text(SMALL_TXT,TOP);
-  disp.println("Welcome to");
-  disp.println("YDigi Puzzle Box!");
-  // "About" and arrow buttons
-  draw_arrow(RIGHT,WHITE);
-  I2C_init_text(SMALL_TXT, 55);
-  disp.println("About");
+void I2C_init_static_text (const char *str, int size, int y_axis) {
+  if (y_axis == TOP) {
+    disp.clearDisplay();
+    disp.setTextColor(WHITE);
+  }
+  disp.setTextSize(size);
+  disp.setCursor(LEFT_INDENT,y_axis);
+  disp.println(str);
 }
 
-void I2C_about_initial_static () {
-  disp.clearDisplay();
-  // About heading
-  I2C_init_text(SMALL_TXT,TOP);
-  disp.println("ABOUT (1/3)");
-  // About text
-  I2C_init_text(SMALL_TXT, 14);
-  disp.println("YDigi Puzzle is a");
-  disp.println("project for CPSC 338");
-  disp.println("by Tanya Shibu and");
-  disp.println("Spencer Strelsov.");
+void I2C_carousel_button_footer () {
   draw_arrow(WHITE,LEFT);
   draw_exit(WHITE);
   draw_arrow(RIGHT,WHITE);
 }
 
-void I2C_about_second_static () {
-  disp.clearDisplay();
-  // About (2/3) heading
-  I2C_init_text(SMALL_TXT,TOP);
-  disp.println("ABOUT (2/3)");
+void I2C_welcome_static () {
+  // Welcome header text
+  I2C_init_static_text("Welcome to", SMALL_TXT, TOP);
+  disp.println("YDigi Puzzle Box!");
+  // "About" and arrow buttons
+  draw_arrow(RIGHT,WHITE);
+  I2C_init_static_text("About", SMALL_TXT, 55);
+}
+
+void I2C_about_initial_static () {
+  // About heading
+  I2C_init_static_text("ABOUT (1/3)", SMALL_TXT, TOP);
   // About text
-  I2C_init_text(SMALL_TXT, 14);
-  disp.println("YDigi stands for Yale");
+  I2C_init_static_text("YDigi Puzzle is a", SMALL_TXT, 14);
+  disp.println("project for CPSC 338");
+  disp.println("by Tanya Shibu and");
+  disp.println("Spencer Strelsov.");
+  // Left arrow, EXIT, and right arrow buttons
+  I2C_carousel_button_footer();
+}
+
+void I2C_about_second_static () {
+  // About (2/3) heading
+  I2C_init_static_text("ABOUT (2/3)", SMALL_TXT, TOP);
+  // About text
+  I2C_init_static_text("YDigi stands for Yale", SMALL_TXT, 14);
   disp.println("Digital Systems. Our");
   disp.println("project is a puzzle");
   disp.println("box!");
-  draw_arrow(WHITE, LEFT);
-  draw_exit(WHITE);
-  draw_arrow(WHITE,RIGHT);
+  // Left arrow, EXIT, and right arrow buttons
+  I2C_carousel_button_footer();
 }
 
 void I2C_about_third_static () {
-  disp.clearDisplay();
   // About (3/3) heading
-  I2C_init_text(SMALL_TXT,TOP);
-  disp.println("ABOUT (3/3)");
+  I2C_init_static_text("ABOUT (3/3)", SMALL_TXT, TOP);
   // About Text
-  I2C_init_text(SMALL_TXT, 13);
-  disp.println("To reach the help");
+  I2C_init_static_text("To reach the help", SMALL_TXT, 13);
   disp.println("screen at any time,");
   disp.println("do a long button");
   disp.println("press on the rotary");
   disp.println("encoder!");
-  draw_arrow(WHITE,LEFT);
-  draw_exit(WHITE);
-  draw_arrow(WHITE,RIGHT);
+  // Left arrow, EXIT, and right arrow buttons
+  I2C_carousel_button_footer();
 }
 
 void I2C_difficulty_mode_static () {
-  disp.clearDisplay();
   // "Select difficulty" heading
-  I2C_init_text(SMALL_TXT,TOP);
-  disp.println("Select difficulty:");
+  I2C_init_static_text("Select difficulty:", SMALL_TXT, TOP);
   // Puzzle box difficulty buttons
-  I2C_init_text(SMALL_TXT,20);
-  disp.println("Easy");
+  I2C_init_static_text("Easy", SMALL_TXT,20);
   disp.println("Medium");
   disp.println("Hard");
   disp.println("Free Mode");
 }
 
 void I2C_help_static () {
-  disp.clearDisplay();
   // HELP heading
-  I2C_init_text(MED_TXT,TOP);
-  disp.println("HELP");
+  I2C_init_static_text("HELP", MED_TXT, TOP);
   // Help buttons
-  I2C_init_text(SMALL_TXT,20);
-  disp.println("About");
+  I2C_init_static_text("About", SMALL_TXT, 20);
   disp.println("Instructions");
   disp.println("Reset");
   disp.println("Back");
 }
 
 void I2C_instruction_initial_static () {
-  disp.clearDisplay();
-  I2C_init_text(SMALL_TXT,TOP);
-  disp.println("YDigi stands for Yale");
-  disp.println("Digital Systems. Our");
-  disp.println("project is a puzzle");
-  disp.println("box, so that's where");
-  disp.println("our name comes from!");
- // disp.println("selecting the difficulty level, your goal");
-// disp.println("will be to solve each puzzle. After every puzzle");
- // disp.println("you solve, you will unlock a digit of the box's");
-//  disp.println("combination lock. Once you get the 3-digit code, enter");
-//  disp.println("it using the rotary encoder to open the lid of the box!");
-  draw_arrow(WHITE,LEFT);
-  draw_exit(WHITE);
-  draw_arrow(WHITE,RIGHT);
-  disp.display();
+  // Instruction heading
+  I2C_init_static_text("INSTRUCTIONS (1/x)", SMALL_TXT, TOP);
+  // Instruction content  
+  I2C_init_static_text("Solve 3 puzzles to", SMALL_TXT, 13);
+  disp.println("open the box. There");
+  disp.println("are 3 difficulty");
+  disp.println("modes + a free mode.");
+  // Left arrow, EXIT, and right arrow buttons
+  I2C_carousel_button_footer();
 }
- /*************************************************************************
- *
- *  Multi-Page Screen Helper Functions:
- *  - The following are helper functions to help modulate code for paginated
- *    screens like ABOUT and INSTRUCTIONS.
- *
- **************************************************************************
- */
 
- void exit_state (int button_press, state *curr_state, state *prev_state, page *page_no) {
-  // Hover over the exit button
-  hover_exit();
-  if (button_press == SINGLE) {
-    // If the prev_state == curr_state, then we are coming back from the HELP screen after clicking the "back" button.
-    if (*prev_state == *curr_state) {
-      // We must compensate by going back to the Welcome screen
-      *curr_state = WELCOME;
-      *prev_state = WELCOME;
-    } else {
-      // Exit back to 
-      *curr_state = *prev_state;
-    }
-    *page_no = PAGE_ZERO; 
-  }
- }
+void I2C_instruction_second_static () {
+  // Instruction heading
+  I2C_init_static_text("INSTRUCTIONS (2/x)", SMALL_TXT, TOP);
+  // Instruction content
+  I2C_init_static_text("The 7-seg time", SMALL_TXT, 13);
+  disp.println("has 2 purposes: show");
+  disp.println("remaining time and");
+  disp.println("combo lock entry.");
+  // Left arrow, EXIT, and right arrow buttons
+  I2C_carousel_button_footer();
+}
 
+void I2C_instruction_third_static () {
+  // Instruction heading
+  I2C_init_static_text("INSTRUCTIONS (3/x)", SMALL_TXT, TOP);
+  // Instruction content
+  I2C_init_static_text("Easy mode gives users", SMALL_TXT, 16);
+  disp.println("120 seconds total to");
+  disp.println("complete the puzzles.");
+  // Left arrow, EXIT, and right arrow buttons
+  I2C_carousel_button_footer();
+}
+
+void I2C_instruction_fourth_static () {
+  // Instruction heading
+  I2C_init_static_text("INSTRUCTIONS (4/x)", SMALL_TXT, TOP);
+  // Instruction content
+  I2C_init_static_text("Med mode gives users", SMALL_TXT, 16);
+  disp.println("90 seconds total to");
+  disp.println("complete the puzzles.");
+  // Left arrow, EXIT, and right arrow buttons
+  I2C_carousel_button_footer();
+}
+
+void I2C_instruction_fifth_static () {
+  // Instruction heading
+  I2C_init_static_text("INSTRUCTIONS (5/x)", SMALL_TXT, TOP);
+  // Instruction content
+  I2C_init_static_text("Hard mode gives users", SMALL_TXT, 16);
+  disp.println("30 seconds total to");
+  disp.println("complete the puzzles.");
+  // Left arrow, EXIT, and right arrow buttons
+  I2C_carousel_button_footer();
+}
+
+void I2C_instruction_sixth_static () {
+  // Instruction heading
+  I2C_init_static_text("INSTRUCTIONS (6/x)", SMALL_TXT, TOP);
+  // Instruction content
+  I2C_init_static_text("Free mode sets no", SMALL_TXT, 15);
+  disp.println("time limit for");
+  disp.println("completing puzzles.");
+  disp.println("It counts upwards.");
+  // Left arrow, EXIT, and right arrow buttons
+  I2C_carousel_button_footer();
+}
+
+void I2C_instruction_seventh_static () {
+  // Instruction heading
+  I2C_init_static_text("INSTRUCTIONS (7/x)", SMALL_TXT, TOP);
+  // Instruction content
+  I2C_init_static_text("When all done,", SMALL_TXT, 15);
+  disp.println("enter combo lock");
+  disp.println("w/ rotary encoder");
+  disp.println("and press its btn.");
+  // Left arrow, EXIT, and right arrow buttons
+  I2C_carousel_button_footer();
+}
+
+void I2C_instruction_eighth_static () {
+  // Instruction heading
+  I2C_init_static_text("INSTRUCTIONS (8/x)", SMALL_TXT, TOP);
+  // Instruction content
+  I2C_init_static_text("That's it!", SMALL_TXT, 16);
+  disp.println("Good luck! :)");
+  // Left arrow, EXIT, and right arrow buttons
+  I2C_carousel_button_footer();
+}
 
  /*************************************************************************
  *
@@ -338,7 +329,6 @@ void I2C_instruction_initial_static () {
  *
  **************************************************************************
  */
-
 
 void blink_animation(int text_y, int selector) {
  //   I2C_selection_screen();
@@ -351,17 +341,13 @@ void blink_animation(int text_y, int selector) {
  // hover_text(text_y, selector, WHITE);
 }
 
-void hover_text(const char *str, int text_y, int highlight_length, int highight_height, uint16_t hover_color) {
-  // Set the text to the opposite color of the hover_color. Useful for blinking text.
-  if (hover_color == WHITE) {
-    disp.setTextColor(BLACK);
-  } else {
-    disp.setTextColor(WHITE);
-  }
+void hover_text(const char *str, int text_y, state_machine_t *s) {
+  // Set the text to BLACK to allow for WHITE rectangle underneath it.
+  disp.setTextColor(BLACK);
   // Maintain the location for writing text when hovering
   disp.setCursor(LEFT_INDENT, text_y);
   // Fill a white rectangle behind the text
-  disp.fillRect(LEFT_INDENT, text_y-1, highlight_length, highight_height, hover_color);
+  disp.fillRect(LEFT_INDENT, text_y-1, s->buttons->hover_length, s->buttons->hover_height, WHITE);
   // Write the text over the white rectangle
   disp.println(str);
 }

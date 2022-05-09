@@ -1,8 +1,13 @@
-#include "pins.h"
-#include <arduino.h>
+#ifndef __BUZZER_H__
+#define __BUZZER_H__
+
+#include "pins_setup.h"
+#include <Arduino.h>
 
 #define FREQ 500
 
-void buzzer_init();
+void init_buzzer ();
 
 void buzz();
+
+#endif

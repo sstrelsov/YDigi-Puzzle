@@ -7,10 +7,6 @@
  */
 bool debounce (unsigned long prev_time, unsigned long curr_time, unsigned long debounce_time);
 
-void button_init () {
-  pinMode(BUTTON_PIN, INPUT_PULLUP);
-}
-
 unsigned long press_time = 0;
 unsigned long release_time;
 unsigned long last_press = 0; /* Equivalent of last_encoder_interrupt, for debouncing the button*/
@@ -32,7 +28,6 @@ int read_button_press () {
   press_time = 0;
   last_press = millis();
   if (long_press == true) {
-    Serial.println("LONG PRESS");
     return LONG;
   }
   return SINGLE;
@@ -45,6 +40,7 @@ bool debounce (unsigned long prev_time, unsigned long curr_time, unsigned long d
   return false;
 }
 
+// RENAME TO GENERIC_PRESS
 bool any_kind(int button_press) {
   if (button_press == SINGLE || button_press == LONG) {
     return true;
