@@ -1,4 +1,4 @@
-#include "encoder.h"
+#include "encoder_ISR.h"
 
 bool state_changed(int curr_state, int *past_state) {
   if (curr_state != *past_state) {
@@ -47,7 +47,7 @@ void encoder_ISR() {
     // Update the selector of the highlighted text if state changed
     if (state_changed(pin_a_state, &pin_a_prev_state)) {
       update_curr_button(pin_a_state, pin_b_state, state_machine);
-      Serial.println(state_machine->buttons->curr_button);
+     // Serial.println(state_machine->buttons->curr_button);
       last_encoder_interrupt = millis();
     }
   } 

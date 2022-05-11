@@ -1,9 +1,11 @@
-#ifndef __PINS_SETUP_H__
-#define __PINS_SETUP_H__
+#ifndef __INIT_H__
+#define __INIT_H__
 
 #include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
+
+#include "SevSeg.h"
 
 extern Adafruit_SSD1306 disp;
 void init_encoder_button ();

@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <Arduino.h>
 #include "state_machine.h"
-#include "pins_setup.h"
+#include "init.h"
 
 #define NONE   0
 #define SINGLE 1

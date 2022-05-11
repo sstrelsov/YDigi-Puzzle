@@ -19,7 +19,8 @@ enum _state {
   INSTRUCTIONS,
   HELP,
   RGB_PUZZLE,
-  PHOTOCELL_PUZZLE
+  PHOTOCELL_PUZZLE,
+  COMBO_LOCK_PUZZLE
 };
 
 typedef enum _state state;
@@ -52,7 +53,7 @@ struct _button_t {
 
 #include "I2C.h"
 #include "button.h"
-#include "encoder.h"
+#include "encoder_ISR.h"
 
 /**
  * @brief Switches the current state to HELP if a LONG button press is detected. 

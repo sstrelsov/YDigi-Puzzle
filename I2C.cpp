@@ -64,15 +64,19 @@ void I2C_difficulty_mode_screen (state_machine_t *s) {
   switch (s->buttons->curr_button) {
     case EASY_BTN:
       hover_text("Easy", 20, s);
+      timer_set_seconds(EASY_TIME);
       break;
     case MED_BTN:
       hover_text("Medium", 29, s);
+      timer_set_seconds(MED_TIME);
       break;
     case HARD_BTN:
       hover_text("Hard", 37, s);
+      timer_set_seconds(HARD_TIME);
       break;
     case FREE_MODE_BTN:
       hover_text("Free Mode", 45, s);
+      timer_set_seconds(FREE_TIME);
       break;
   }
   // Display the screen with button hover
@@ -232,7 +236,7 @@ void I2C_help_static () {
 
 void I2C_instruction_initial_static () {
   // Instruction heading
-  I2C_init_static_text("INSTRUCTIONS (1/x)", SMALL_TXT, TOP);
+  I2C_init_static_text("INSTRUCTIONS (1/8)", SMALL_TXT, TOP);
   // Instruction content  
   I2C_init_static_text("Solve 3 puzzles to", SMALL_TXT, 13);
   disp.println("open the box. There");
@@ -244,7 +248,7 @@ void I2C_instruction_initial_static () {
 
 void I2C_instruction_second_static () {
   // Instruction heading
-  I2C_init_static_text("INSTRUCTIONS (2/x)", SMALL_TXT, TOP);
+  I2C_init_static_text("INSTRUCTIONS (2/8)", SMALL_TXT, TOP);
   // Instruction content
   I2C_init_static_text("The 7-seg time", SMALL_TXT, 13);
   disp.println("has 2 purposes: show");
@@ -256,7 +260,7 @@ void I2C_instruction_second_static () {
 
 void I2C_instruction_third_static () {
   // Instruction heading
-  I2C_init_static_text("INSTRUCTIONS (3/x)", SMALL_TXT, TOP);
+  I2C_init_static_text("INSTRUCTIONS (3/8)", SMALL_TXT, TOP);
   // Instruction content
   I2C_init_static_text("Easy mode gives users", SMALL_TXT, 16);
   disp.println("120 seconds total to");
@@ -267,7 +271,7 @@ void I2C_instruction_third_static () {
 
 void I2C_instruction_fourth_static () {
   // Instruction heading
-  I2C_init_static_text("INSTRUCTIONS (4/x)", SMALL_TXT, TOP);
+  I2C_init_static_text("INSTRUCTIONS (4/8)", SMALL_TXT, TOP);
   // Instruction content
   I2C_init_static_text("Med mode gives users", SMALL_TXT, 16);
   disp.println("90 seconds total to");
@@ -278,7 +282,7 @@ void I2C_instruction_fourth_static () {
 
 void I2C_instruction_fifth_static () {
   // Instruction heading
-  I2C_init_static_text("INSTRUCTIONS (5/x)", SMALL_TXT, TOP);
+  I2C_init_static_text("INSTRUCTIONS (5/8)", SMALL_TXT, TOP);
   // Instruction content
   I2C_init_static_text("Hard mode gives users", SMALL_TXT, 16);
   disp.println("30 seconds total to");
@@ -289,7 +293,7 @@ void I2C_instruction_fifth_static () {
 
 void I2C_instruction_sixth_static () {
   // Instruction heading
-  I2C_init_static_text("INSTRUCTIONS (6/x)", SMALL_TXT, TOP);
+  I2C_init_static_text("INSTRUCTIONS (6/8)", SMALL_TXT, TOP);
   // Instruction content
   I2C_init_static_text("Free mode sets no", SMALL_TXT, 15);
   disp.println("time limit for");
@@ -301,19 +305,19 @@ void I2C_instruction_sixth_static () {
 
 void I2C_instruction_seventh_static () {
   // Instruction heading
-  I2C_init_static_text("INSTRUCTIONS (7/x)", SMALL_TXT, TOP);
+  I2C_init_static_text("INSTRUCTIONS (7/8)", SMALL_TXT, TOP);
   // Instruction content
   I2C_init_static_text("When all done,", SMALL_TXT, 15);
-  disp.println("enter combo lock");
-  disp.println("w/ rotary encoder");
-  disp.println("and press its btn.");
+  disp.println("the buzzer will");
+  disp.println("sound and the");
+  disp.println("lid will open.");
   // Left arrow, EXIT, and right arrow buttons
   I2C_carousel_button_footer();
 }
 
 void I2C_instruction_eighth_static () {
   // Instruction heading
-  I2C_init_static_text("INSTRUCTIONS (8/x)", SMALL_TXT, TOP);
+  I2C_init_static_text("INSTRUCTIONS (8/8)", SMALL_TXT, TOP);
   // Instruction content
   I2C_init_static_text("That's it!", SMALL_TXT, 16);
   disp.println("Good luck! :)");

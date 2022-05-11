@@ -1,7 +1,7 @@
 #ifndef __BUZZER_H__
 #define __BUZZER_H__
 
-#include "pins_setup.h"
+#include "init.h"
 #include <Arduino.h>
 
 #define FREQ 500

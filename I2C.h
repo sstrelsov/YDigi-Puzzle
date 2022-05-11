@@ -4,7 +4,9 @@
 #include <stdbool.h>
 
 #include "state_machine.h"
-#include "encoder.h"
+#include "encoder_ISR.h"
+#include "timer.h"
+#include "SevSeg.h"
 
 #define LEFT_INDENT 0
 #define TOP 0

@@ -1,11 +1,11 @@
-#ifndef __ENCODER_H__
-#define __ENCODER_H__
+#ifndef __ENCODER_ISR_H__
+#define __ENCODER_ISR_H__
 
 #include <stdbool.h>
 #include <Arduino.h>
 
 #include "state_machine.h"
-#include "pins_setup.h"
+#include "init.h"
 
 void encoder_ISR ();
 /*
