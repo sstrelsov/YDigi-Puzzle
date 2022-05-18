@@ -4,14 +4,8 @@
 #include "state_machine.h"
 #include "timer.h"
 
-// Create a state_machine struct to navigate the program
-state_machine_t *state_machine = create_state_machine();
-
 void setup() {
-  // TODO: EXPLAIN THE TIMER INTERRUPT
-  // Got from: https://learn.adafruit.com/multi-tasking-the-arduino-part-2/timers
-  OCR0A = 0xAF;
-  TIMSK0 |= _BV(OCIE0A);
+  init_timer_interrupt (); /* Initializes the registers to allow for TIMER_0 interrupt */
   init_I2C_display(); /* Initialize the I2C display, clearing screen and getting ready for content */
   init_rotary_encoder(); /* Set the a and b pins of encoder */
   init_encoder_button(); /* Set the button pin of the encoder to passive pullup */
@@ -21,6 +15,9 @@ void setup() {
   // Help with interrupts from the Arduino tutorials: https://create.arduino.cc/projecthub/rafitc/interrupts-basics-f475d5
   attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_A), encoder_ISR, CHANGE); /* Attach an interrupt for a change in the encoderA pin, launching the encoder ISR */
 }
+
+// Create a state_machine struct to navigate the program
+state_machine_t *state_machine = create_state_machine();
 
 void loop() {
   // Poll the rotary encoder's button for either a single or a long press
@@ -55,11 +52,14 @@ void loop() {
       // TODO: Change Task 3. Cannot enter numbers on 7-seg while it's counting down
       I2C_task_3_screen(state_machine);
       break;
-    case GAME_OVER:
-      // TODO
+    case GAME_LOST:
+      I2C_game_lost_screen(state_machine);
       break;
-    case PUZZLES_COMPLETE:
-      // TODO
+    case GAME_WON:
+      I2C_game_won_screen(state_machine);
+      break;
+    case END:
+      I2C_end_screen(state_machine);
       break;
   }
 }

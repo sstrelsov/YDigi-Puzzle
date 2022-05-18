@@ -13,6 +13,9 @@ void I2C_confirmation_static (state_machine_t *s);
 void I2C_task_1_static ();
 void I2C_task_2_static ();
 void I2C_task_3_static ();
+void I2C_game_won_static ();
+void I2C_game_lost_static ();
+void I2C_end_static ();
 void I2C_help_static ();
 void I2C_instruction_initial_static ();
 void I2C_instruction_second_static ();
@@ -158,7 +161,7 @@ void I2C_task_1_screen (state_machine_t *s) {
       state_switch(s, TASK_2);
       break;
     case FAILED:
-      state_switch(s, GAME_OVER);
+      state_switch(s, GAME_LOST);
       break;
   }
   disp.display();
@@ -180,7 +183,7 @@ void I2C_task_2_screen (state_machine_t *s) {
       state_switch(s, TASK_3);
       break;
     case FAILED:
-      state_switch(s, GAME_OVER);
+      state_switch(s, GAME_LOST);
       break;
   }
   disp.display();
@@ -199,12 +202,31 @@ void I2C_task_3_screen (state_machine_t *s) {
       break;
     case COMPLETE:
       hover_arrow(RIGHT);
-      state_switch(s, PUZZLES_COMPLETE);
+      state_switch(s, GAME_WON);
       break;
     case FAILED:
-      state_switch(s, GAME_OVER);
+      state_switch(s, GAME_LOST);
       break;
   }
+  disp.display();
+}
+
+void I2C_game_won_screen (state_machine_t *s) {
+  I2C_game_won_static();
+  hover_exit();
+  state_switch(s,END);
+  disp.display();
+}
+
+void I2C_game_lost_screen (state_machine_t *s) {
+  I2C_game_lost_static();
+  hover_text("TRY AGAIN", 50, s);
+  state_switch(s,END);
+  disp.display();
+}
+
+void I2C_end_screen (state_machine_t *s) {
+  I2C_end_static();
   disp.display();
 }
 
@@ -346,17 +368,17 @@ void I2C_difficulty_mode_static () {
 void I2C_confirmation_static (state_machine_t *s) {
   // Write heading
   I2C_init_static_text("You selected:", SMALL_TXT, TOP);
-  switch (s->tasks->time_remaining) {
-    case EASY_TIME:
+  switch (s->tasks->difficulty_mode) {
+    case EASY:
       I2C_init_static_text("EASY", MED_TXT, 20);
       break;
-    case MED_TIME:
+    case MED:
       I2C_init_static_text("MEDIUM", MED_TXT, 20);
       break;
-    case HARD_TIME:
+    case HARD:
       I2C_init_static_text("HARD", MED_TXT, 20);
       break;
-    case FREE_TIME:
+    case FREE:
       I2C_init_static_text("FREE", MED_TXT, 20);
       break;
   }
@@ -391,6 +413,35 @@ void I2C_task_3_static () {
   disp.println("to enter the numbers");
   disp.println("on the 7-Seg Display.");
   I2C_init_static_text("4 1 3 2", SMALL_TXT, 50);
+}
+
+void I2C_game_won_static () {
+  // Heading
+  I2C_init_static_text("CONGRATS", MED_TXT, TOP);
+  // Body Text
+  I2C_init_static_text("You completed all", SMALL_TXT, 20);
+  disp.println("the puzzles :)");
+  draw_exit(WHITE);
+}
+
+void I2C_game_lost_static () {
+  // Heading
+  I2C_init_static_text("GAME OVER", MED_TXT, TOP);
+  // Body Text
+  I2C_init_static_text("You ran out of time", SMALL_TXT, 20);
+  disp.println("to complete");
+  disp.println("a puzzle :(");
+  // Try again button at bottom of screen
+  I2C_init_static_text("TRY AGAIN", SMALL_TXT, 50); 
+}
+
+void I2C_end_static () {
+  // Heading
+  I2C_init_static_text("THANK YOU", MED_TXT, TOP);
+  // Body
+  I2C_init_static_text("Press reset button", SMALL_TXT, 20);
+  disp.println("on Arduino to play");
+  disp.println("again.");
 }
 
 void I2C_help_static () {

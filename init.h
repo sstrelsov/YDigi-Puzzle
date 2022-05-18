@@ -13,6 +13,12 @@ extern Adafruit_SSD1306 disp;
  * @brief 
  * 
  */
+void init_timer_interrupt ();
+
+/**
+ * @brief 
+ * 
+ */
 void init_encoder_button ();
 
 /**

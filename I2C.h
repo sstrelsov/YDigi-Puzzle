@@ -97,6 +97,27 @@ void I2C_task_2_screen (state_machine_t *s);
 void I2C_task_3_screen (state_machine_t *s);
 
 /**
+ * @brief 
+ * 
+ * @param s 
+ */
+void I2C_game_won_screen (state_machine_t *s);
+
+/**
+ * @brief 
+ * 
+ * @param s 
+ */
+void I2C_game_lost_screen (state_machine_t *s);
+
+/**
+ * @brief 
+ * 
+ * @param s 
+ */
+void I2C_end_screen (state_machine_t *s);
+
+/**
  * @brief Displays the HELP state's screen. The "Help" screen
  * is accessible at any time during the program with a long press of the
  * rotary encoder button. It includes 4 options: "About,' which tells

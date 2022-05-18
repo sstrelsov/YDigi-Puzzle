@@ -1,5 +1,12 @@
 #include "init.h"
 
+void init_timer_interrupt () {
+  // TODO: EXPLAIN THE TIMER INTERRUPT
+  // Got from: https://learn.adafruit.com/multi-tasking-the-arduino-part-2/timers
+  OCR0A = 0xAF;
+  TIMSK0 |= _BV(OCIE0A);
+}
+
 void init_encoder_button () {
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 }

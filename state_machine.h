@@ -23,8 +23,9 @@ enum _state {
   TASK_1,
   TASK_2,
   TASK_3,
-  PUZZLES_COMPLETE,
-  GAME_OVER
+  GAME_WON,
+  GAME_LOST,
+  END
 };
 
 typedef enum _state state;
@@ -39,6 +40,7 @@ struct _state_machine_t {
 struct _state_t {
   state curr_state; /* The current state of the state machine */
   state prev_state; /* The previous state of the state machine */
+  bool curr_state_accessed_from_help;
   state pre_help_curr_state;
   state pre_help_prev_state;
 };
@@ -77,13 +79,6 @@ struct _task_t {
 #include "I2C.h"
 #include "button.h"
 #include "encoder_ISR.h"
-
-/**
- * @brief Switches the current state to HELP if a LONG button press is detected. 
- * Saves the previous state, clears the display for the help screen to load in.
- * @param screen struct pointer.
- */
-void state_switch_to_help (state_machine_t *s);
 
 /**
  * @brief Create a pointer to a screen_t struct, initializing each member

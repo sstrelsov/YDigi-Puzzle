@@ -8,15 +8,20 @@
 
 #define NONE   0
 #define SINGLE 1
-#define DUB    2
-#define LONG   3
+#define LONG   2
 
 #define LONG_PRESS_TIME 400
 
 /**
- * @brief 
+ * @brief Determines whether the button
+ * on the rotary encoder was pressed along with
+ * the type of press. Debounces button presses. If
+ * the button was pressed for more than 400 ms, then
+ * it is considered a LONG press. If it is a normal
+ * press, it is SINGLE.
  * 
- * @return int 
+ * @return int, the type of button press. Returns SINGLE
+ * (1), NONE (0), LONG (2).
  */
 int read_button_press ();
 
