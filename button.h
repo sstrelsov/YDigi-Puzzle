@@ -13,7 +13,20 @@
 
 #define LONG_PRESS_TIME 400
 
+/**
+ * @brief 
+ * 
+ * @return int 
+ */
 int read_button_press ();
+
+/**
+ * @brief 
+ * 
+ * @param button_press 
+ * @return true 
+ * @return false 
+ */
 bool any_kind (int button_press);
 
 #endif

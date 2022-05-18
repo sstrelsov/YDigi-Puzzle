@@ -9,6 +9,12 @@
  */
 void reset_screen_struct (state_machine_t *s);
 
+/**
+ * @brief 
+ * 
+ * @param s 
+ * @param next_state 
+ */
 void init_buttons (state_machine_t *s, state next_state);
 
 state_machine_t *create_state_machine () {
@@ -43,6 +49,13 @@ state_machine_t *create_state_machine () {
   s->buttons->hover_length = 30;
   s->buttons->hover_height = 10;
 
+  s->tasks = (task_t *) malloc(sizeof(task_t));
+  if (s->tasks == NULL) {
+    return NULL;
+  }
+  s->tasks->task_status = NOT_STARTED;
+  s->tasks->time_remaining = 0.0;
+  
   return s;
 }
 
@@ -104,14 +117,23 @@ void init_buttons(state_machine_t *s, state next_state) {
       s->buttons->hover_length = 80;
       s->buttons->hover_height = 9;
       break;
+    case CONFIRM_DIFFICULTY:
+      s->buttons->num_buttons = 2;
+      break;
     case INSTRUCTIONS:
       s->buttons->num_buttons = 3;
       break;
-    case PHOTOCELL_PUZZLE:
-      s->buttons->num_buttons = 2;
+    case TASK_1:
+      s->tasks->task_status = NOT_STARTED;
+      s->buttons->num_buttons = 1;
       break;
-    case RGB_PUZZLE:
-      s->buttons->num_buttons = 2;
+    case TASK_2:
+      s->tasks->task_status = NOT_STARTED;
+      s->buttons->num_buttons = 1;
+      break;
+    case TASK_3:
+      s->tasks->task_status = NOT_STARTED;
+      s->buttons->num_buttons = 1;
       break;
   }
 }

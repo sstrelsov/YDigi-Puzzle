@@ -8,6 +8,6 @@
 
 void init_buzzer ();
 
-void buzz();
+void buzz ();
 
 #endif

@@ -31,6 +31,10 @@
 #define HARD_BTN 2
 #define FREE_MODE_BTN 3
 
+// CONFIRM_DIFFICULTY screen buttons (2 buttons)
+#define BACK_ARROW 1
+#define START 0
+
 // HELP screen buttons (3 buttons)
 #define INSTR_BTN 1
 #define RESET_BTN 2
@@ -65,6 +69,34 @@ void I2C_about_screen (state_machine_t *s);
 void I2C_difficulty_mode_screen (state_machine_t *s);
 
 /**
+ * @brief 
+ * 
+ * @param s 
+ */
+void I2C_confirmation_screen (state_machine_t *s);
+
+/**
+ * @brief 
+ * 
+ * @param s 
+ */
+void I2C_task_1_screen (state_machine_t *s);
+
+/**
+ * @brief 
+ * 
+ * @param s 
+ */
+void I2C_task_2_screen (state_machine_t *s);
+
+/**
+ * @brief 
+ * 
+ * @param s 
+ */
+void I2C_task_3_screen (state_machine_t *s);
+
+/**
  * @brief Displays the HELP state's screen. The "Help" screen
  * is accessible at any time during the program with a long press of the
  * rotary encoder button. It includes 4 options: "About,' which tells
@@ -86,8 +118,23 @@ void I2C_help_screen (state_machine_t *s);
  * @param s, pointer to a screen_t struct
  */
 void I2C_instruction_screen (state_machine_t *s);
-
+/**
+ * @brief 
+ * 
+ * @param dir 
+ */
 void hover_arrow (int dir);
+
+/**
+ * @brief 
+ * 
+ */
 void hover_exit ();
+
+/**
+ * @brief 
+ * 
+ */
+void hover_start ();
 
 #endif

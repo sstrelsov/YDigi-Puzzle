@@ -17,6 +17,7 @@ void setup() {
   init_encoder_button(); /* Set the button pin of the encoder to passive pullup */
   init_buzzer(); /* Initialize the buzzer to the proper pin */
   init_seven_segment(); /* TODO */
+  
   // Help with interrupts from the Arduino tutorials: https://create.arduino.cc/projecthub/rafitc/interrupts-basics-f475d5
   attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_A), encoder_ISR, CHANGE); /* Attach an interrupt for a change in the encoderA pin, launching the encoder ISR */
 }
@@ -41,22 +42,24 @@ void loop() {
     case INSTRUCTIONS:
      I2C_instruction_screen(state_machine);
      break;
-    case PHOTOCELL_PUZZLE:
-      // TODO screen
-      // TODO puzzle function
+    case CONFIRM_DIFFICULTY:
+      I2C_confirmation_screen(state_machine);
       break;
-    case RGB_PUZZLE:
-      // TODO screen
-      // TODO puzzle function
+    case TASK_1:
+      I2C_task_1_screen(state_machine);
       break;
-    case COMBO_LOCK_PUZZLE:
-      // TODO screen
-      // TODO puzzle function
+    case TASK_2:
+      I2C_task_2_screen(state_machine);
+      break;
+    case TASK_3:
+      // TODO: Change Task 3. Cannot enter numbers on 7-seg while it's counting down
+      I2C_task_3_screen(state_machine);
+      break;
+    case GAME_OVER:
+      // TODO
+      break;
+    case PUZZLES_COMPLETE:
+      // TODO
       break;
   }
-}
-
-// Refreshes the seven segment display every 1 millisecond through ISR
-ISR(TIMER0_COMPA_vect) {
-  sevseg.refreshDisplay();
 }

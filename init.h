@@ -8,9 +8,25 @@
 #include "SevSeg.h"
 
 extern Adafruit_SSD1306 disp;
+
+/**
+ * @brief 
+ * 
+ */
 void init_encoder_button ();
+
+/**
+ * @brief 
+ * 
+ */
 void init_buzzer ();
+
+/**
+ * @brief 
+ * 
+ */
 void init_rotary_encoder ();
+
 /**
  * @brief Initializes the I2C display
  * by clearing the screen, running the
@@ -19,6 +35,10 @@ void init_rotary_encoder ();
  */
 void init_I2C_display ();
 
+/**
+ * @brief 
+ * 
+ */
 void init_seven_segment ();
 
 

@@ -9,6 +9,7 @@ typedef struct _state_machine_t state_machine_t;
 typedef struct _state_t state_t;
 typedef struct _page_t page_t;
 typedef struct _button_t button_t;
+typedef struct _task_t task_t;
 extern state_machine_t *state_machine;
 
 // Enumeration of all the different states
@@ -18,9 +19,12 @@ enum _state {
   DIFFICULTY_MODE,
   INSTRUCTIONS,
   HELP,
-  RGB_PUZZLE,
-  PHOTOCELL_PUZZLE,
-  COMBO_LOCK_PUZZLE
+  CONFIRM_DIFFICULTY,
+  TASK_1,
+  TASK_2,
+  TASK_3,
+  PUZZLES_COMPLETE,
+  GAME_OVER
 };
 
 typedef enum _state state;
@@ -28,7 +32,8 @@ typedef enum _state state;
 struct _state_machine_t {
   state_t *states; /* Pointer to a struct that contains meta-data about the current and previous states */
   page_t *pages; /* Pointer to a struct that contains meta-data about the page information of the current state */
-  button_t *buttons; /*Pointer to a struct that contains meta-data about the buttons being hovered over and pressed */
+  button_t *buttons; /* Pointer to a struct that contains meta-data about the buttons being hovered over and pressed */
+  task_t *tasks; /* Pointer to a struct that contains boolean flags for each of the 3 tasks as well as time remaining in a given task */
 };
 
 struct _state_t {
@@ -49,6 +54,24 @@ struct _button_t {
   int button_press; /* Indicates whether a button is pressed, along with what type of press (SINGLE or LONG) */
   uint16_t hover_length; 
   uint16_t hover_height;
+};
+
+// Task status
+#define NOT_STARTED -1
+#define FAILED 0
+#define COMPLETE 1
+#define IN_PROGRESS 2
+
+// Task difficulty modes
+#define EASY 0
+#define MED 1
+#define HARD 2
+#define FREE 3
+
+struct _task_t {
+  int difficulty_mode;
+  int task_status;
+  unsigned long time_remaining;
 };
 
 #include "I2C.h"

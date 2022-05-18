@@ -5,6 +5,16 @@
  * the BUTTON_DEBOUNCE_TIME constant defined in button.h. Returns true if
  * a button press was accurately read, false if it was noise.
  */
+
+/**
+ * @brief 
+ * 
+ * @param prev_time 
+ * @param curr_time 
+ * @param debounce_time 
+ * @return true 
+ * @return false 
+ */
 bool debounce (unsigned long prev_time, unsigned long curr_time, unsigned long debounce_time);
 
 unsigned long press_time = 0;

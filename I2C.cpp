@@ -1,11 +1,18 @@
 #include "I2C.h"
 
-// Screen static pages
+/**
+ * @brief 
+ * 
+ */
 void I2C_welcome_static ();
 void I2C_about_initial_static ();
 void I2C_about_second_static ();
 void I2C_about_third_static ();
 void I2C_difficulty_mode_static ();
+void I2C_confirmation_static (state_machine_t *s);
+void I2C_task_1_static ();
+void I2C_task_2_static ();
+void I2C_task_3_static ();
 void I2C_help_static ();
 void I2C_instruction_initial_static ();
 void I2C_instruction_second_static ();
@@ -17,13 +24,45 @@ void I2C_instruction_seventh_static ();
 void I2C_instruction_eighth_static ();
 
 // Screen object helpers
+/**
+ * @brief 
+ * 
+ * @param color 
+ */
 void draw_exit (uint16_t color);
+void draw_start (uint16_t color);
+
+/**
+ * @brief 
+ * 
+ * @param color 
+ * @param dir 
+ */
 void draw_arrow (uint16_t color, int dir);
-void blink_animation (int text_y, int selector);
+
+/**
+ * @brief 
+ * 
+ * @param str 
+ * @param text_y 
+ * @param s 
+ */
 void hover_text (const char *str, int text_y, state_machine_t *s);
 
 // Text display helpers
+/**
+ * @brief 
+ * 
+ * @param str 
+ * @param size 
+ * @param y_axis 
+ */
 void I2C_init_static_text (const char *str, int size, int y_axis);
+
+/**
+ * @brief 
+ * 
+ */
 void I2C_carousel_button_footer ();
 
 void I2C_welcome_screen (state_machine_t *s) {
@@ -63,23 +102,109 @@ void I2C_difficulty_mode_screen (state_machine_t *s) {
   I2C_difficulty_mode_static();
   switch (s->buttons->curr_button) {
     case EASY_BTN:
+      s->tasks->difficulty_mode = EASY;
       hover_text("Easy", 20, s);
-      timer_set_seconds(EASY_TIME);
+      timer_set_seconds(s);
       break;
     case MED_BTN:
+      s->tasks->difficulty_mode = MED;
       hover_text("Medium", 29, s);
-      timer_set_seconds(MED_TIME);
+      timer_set_seconds(s);
       break;
     case HARD_BTN:
+      s->tasks->difficulty_mode = HARD;
       hover_text("Hard", 37, s);
-      timer_set_seconds(HARD_TIME);
+      timer_set_seconds(s);
       break;
     case FREE_MODE_BTN:
+      s->tasks->difficulty_mode = FREE;
       hover_text("Free Mode", 45, s);
-      timer_set_seconds(FREE_TIME);
+      timer_set_seconds(s);
       break;
   }
+  state_switch(s, CONFIRM_DIFFICULTY);
   // Display the screen with button hover
+  disp.display();
+}
+
+void I2C_confirmation_screen(state_machine_t *s) {
+  I2C_confirmation_static(s);
+  switch (s->buttons->curr_button) {
+    case BACK_ARROW:
+      hover_arrow(LEFT);
+      state_switch(s, DIFFICULTY_MODE);
+      break;
+    case START:
+      hover_start();
+      state_switch(s, TASK_1);
+      break;
+  }
+  disp.display();
+}
+
+void I2C_task_1_screen (state_machine_t *s) {
+  I2C_task_1_static();
+  switch (s->tasks->task_status) {
+    case NOT_STARTED:
+      timer_set_seconds(s);
+      s->tasks->task_status = IN_PROGRESS;
+      break;
+    case IN_PROGRESS:
+      timer_run(s);
+      // TODO: Test for Task Completion
+      break;
+    case COMPLETE:
+      hover_arrow(RIGHT);
+      state_switch(s, TASK_2);
+      break;
+    case FAILED:
+      state_switch(s, GAME_OVER);
+      break;
+  }
+  disp.display();
+}
+
+void I2C_task_2_screen (state_machine_t *s) {
+  I2C_task_2_static();
+  switch (s->tasks->task_status) {
+    case NOT_STARTED:
+      timer_set_seconds(s);
+      s->tasks->task_status = IN_PROGRESS;
+      break;
+    case IN_PROGRESS:
+      timer_run(s);
+      // TODO: Test for Task Completion
+      break;
+    case COMPLETE:
+      hover_arrow(RIGHT);
+      state_switch(s, TASK_3);
+      break;
+    case FAILED:
+      state_switch(s, GAME_OVER);
+      break;
+  }
+  disp.display();
+}
+
+void I2C_task_3_screen (state_machine_t *s) {
+  I2C_task_3_static();
+  switch (s->tasks->task_status) {
+    case NOT_STARTED:
+      timer_set_seconds(s);
+      s->tasks->task_status = IN_PROGRESS;
+      break;
+    case IN_PROGRESS:
+      timer_run(s);
+      // TODO: Test for Task Completion
+      break;
+    case COMPLETE:
+      hover_arrow(RIGHT);
+      state_switch(s, PUZZLES_COMPLETE);
+      break;
+    case FAILED:
+      state_switch(s, GAME_OVER);
+      break;
+  }
   disp.display();
 }
 
@@ -162,12 +287,6 @@ void I2C_init_static_text (const char *str, int size, int y_axis) {
   disp.println(str);
 }
 
-void I2C_carousel_button_footer () {
-  draw_arrow(WHITE,LEFT);
-  draw_exit(WHITE);
-  draw_arrow(RIGHT,WHITE);
-}
-
 void I2C_welcome_static () {
   // Welcome header text
   I2C_init_static_text("Welcome to", SMALL_TXT, TOP);
@@ -218,10 +337,60 @@ void I2C_difficulty_mode_static () {
   // "Select difficulty" heading
   I2C_init_static_text("Select difficulty:", SMALL_TXT, TOP);
   // Puzzle box difficulty buttons
-  I2C_init_static_text("Easy", SMALL_TXT,20);
+  I2C_init_static_text("Easy", SMALL_TXT, 20);
   disp.println("Medium");
   disp.println("Hard");
   disp.println("Free Mode");
+}
+
+void I2C_confirmation_static (state_machine_t *s) {
+  // Write heading
+  I2C_init_static_text("You selected:", SMALL_TXT, TOP);
+  switch (s->tasks->time_remaining) {
+    case EASY_TIME:
+      I2C_init_static_text("EASY", MED_TXT, 20);
+      break;
+    case MED_TIME:
+      I2C_init_static_text("MEDIUM", MED_TXT, 20);
+      break;
+    case HARD_TIME:
+      I2C_init_static_text("HARD", MED_TXT, 20);
+      break;
+    case FREE_TIME:
+      I2C_init_static_text("FREE", MED_TXT, 20);
+      break;
+  }
+  // Include back button
+  draw_arrow(WHITE,LEFT);
+  draw_start(WHITE);
+}
+
+void I2C_task_1_static () {
+  // Heading
+  I2C_init_static_text("TASK 1", MED_TXT, TOP);
+  // Task instructions
+  I2C_init_static_text("Cover photocells in", SMALL_TXT, 20);
+  disp.println("the following order");
+  I2C_init_static_text("2 1 3 5 4 6", SMALL_TXT, 40);
+}
+
+void I2C_task_2_static () {
+  // Heading
+  I2C_init_static_text("TASK 2", MED_TXT, TOP);
+  // Task instructions
+  I2C_init_static_text("Flip the switches", SMALL_TXT, 20);
+  disp.println("to get RGB pattern");
+  I2C_init_static_text("R B B", SMALL_TXT, 40);
+}
+
+void I2C_task_3_static () {
+  // Heading
+  I2C_init_static_text("TASK 3", MED_TXT, TOP);
+  // Task instructions
+  I2C_init_static_text("Use rotary encoder", SMALL_TXT, 20);
+  disp.println("to enter the numbers");
+  disp.println("on the 7-Seg Display.");
+  I2C_init_static_text("4 1 3 2", SMALL_TXT, 50);
 }
 
 void I2C_help_static () {
@@ -264,7 +433,7 @@ void I2C_instruction_third_static () {
   // Instruction content
   I2C_init_static_text("Easy mode gives users", SMALL_TXT, 16);
   disp.println("120 seconds total to");
-  disp.println("complete the puzzles.");
+  disp.println("complete each puzzle.");
   // Left arrow, EXIT, and right arrow buttons
   I2C_carousel_button_footer();
 }
@@ -275,7 +444,7 @@ void I2C_instruction_fourth_static () {
   // Instruction content
   I2C_init_static_text("Med mode gives users", SMALL_TXT, 16);
   disp.println("90 seconds total to");
-  disp.println("complete the puzzles.");
+  disp.println("complete each puzzle.");
   // Left arrow, EXIT, and right arrow buttons
   I2C_carousel_button_footer();
 }
@@ -286,7 +455,7 @@ void I2C_instruction_fifth_static () {
   // Instruction content
   I2C_init_static_text("Hard mode gives users", SMALL_TXT, 16);
   disp.println("30 seconds total to");
-  disp.println("complete the puzzles.");
+  disp.println("complete each puzzle.");
   // Left arrow, EXIT, and right arrow buttons
   I2C_carousel_button_footer();
 }
@@ -334,17 +503,6 @@ void I2C_instruction_eighth_static () {
  **************************************************************************
  */
 
-void blink_animation(int text_y, int selector) {
- //   I2C_selection_screen();
-//  hover_text(text_y, selector, BLACK);
-  delay(300);
-//  hover_text(text_y, selector, WHITE);
-  delay(300);
- //// hover_text(text_y, selector, BLACK);
-  delay(300);
- // hover_text(text_y, selector, WHITE);
-}
-
 void hover_text(const char *str, int text_y, state_machine_t *s) {
   // Set the text to BLACK to allow for WHITE rectangle underneath it.
   disp.setTextColor(BLACK);
@@ -390,4 +548,23 @@ void hover_exit () {
   disp.setCursor(52,55); 
   disp.fillRect(51, 54, 25, 10, WHITE);
   draw_exit(BLACK);
+}
+
+void draw_start(uint16_t color) {
+  disp.setTextSize(SMALL_TXT);
+  disp.setTextColor(color);
+  disp.setCursor(95,55);
+  disp.println("START");
+}
+
+void hover_start() {
+  disp.setCursor(95,55);
+  disp.fillRect(94, 54, 32, 10, WHITE);
+  draw_start(BLACK);
+}
+
+void I2C_carousel_button_footer () {
+  draw_arrow(WHITE,LEFT);
+  draw_exit(WHITE);
+  draw_arrow(RIGHT,WHITE);
 }
