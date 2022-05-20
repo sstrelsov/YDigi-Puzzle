@@ -1,7 +1,18 @@
 #include "I2C.h"
 
 /**
- * @brief 
+ * @brief Each of the following helper functions display the
+ * I2C screen for different states of the state machine. Each uses
+ * the same naming convention of the I2C screen functions, but contain
+ * the word 'static.' Every function displays a static screen except for
+ * I2C_confirmation_static, which changes the text displayed on the screen
+ * based on the user's difficulty selection.
+ * 
+ * These functions are necessary because the I2C screen functions are constantly
+ * being refreshed and altering based on the user's actions – different buttons are
+ * hovered over based on the state of the rotary encoder. The original, static screen
+ * needs to constantly be refreshed to create the illusion of the user hovering over buttons
+ * on the same screen.
  * 
  */
 void I2C_welcome_static ();
@@ -26,60 +37,86 @@ void I2C_instruction_sixth_static ();
 void I2C_instruction_seventh_static ();
 void I2C_instruction_eighth_static ();
 
-// Screen object helpers
 /**
- * @brief 
+ * @brief These functions draw the 'EXIT' and 
+ * 'START' buttons at a fixed location on the bottom
+ * of the 128x64 I2C display. They take a color parameter
+ * that allows them to be dynamically changed for when they're
+ * hovered over.
  * 
- * @param color 
+ * @param color either WHITE or BLACK
  */
 void draw_exit (uint16_t color);
 void draw_start (uint16_t color);
 
 /**
- * @brief 
+ * @brief Draws an arrow the acts as a button on
+ * either the bottom left or bottom right of the I2C
+ * display. The color parameter allows them to be dynamically
+ * hovered over, and the 'dir' paramater allows the same function
+ * to be reused to create 'next' and 'back' buttons on the I2C display.
+ * This is helpful for states like ABOUT and INSTRUCTIONS that contain
+ * multiple pages of information that the user can cycle through.
  * 
- * @param color 
- * @param dir 
+ * The arrow is draw with the Adafruit_SSD1306 library, using the drawLine
+ * function to manually draw each line that creates the arrow.
+ * 
+ * @param color either WHITE or BLACK, the color of the arrow
+ * @param dir either LEFT or RIGHT, the direction the arrow points.
  */
 void draw_arrow (uint16_t color, int dir);
 
 /**
- * @brief 
+ * @brief This helper function is used in many I2C screen functions to
+ * simulate the user hovering over a virtual button. It uses the Adafruit_SSD1306
+ * library's fillRect function to fill a white rectangle beneath the text to simulate
+ * a 'hover.' 
  * 
- * @param str 
- * @param text_y 
- * @param s 
+ * @param str the string of text to hover over with a white rectangle
+ * @param text_y the y axis location to set the cursor for writing the text on the I2C screen
+ * @param s pointer to a state machine 's'
  */
 void hover_text (const char *str, int text_y, state_machine_t *s);
 
-// Text display helpers
 /**
- * @brief 
+ * @brief Helper function for the static helper functions. Initializes the static 
+ * text to include a certain string, size (0,1,2), and y axis cursor. Consolidates
+ * multiple lines of code into one. If writing text at the top of the screen, the constant
+ * TOP is used for the size parameter, and the display is cleared before writing any text
+ * per the Adafruit_SSD1306 library specifications.
  * 
- * @param str 
- * @param size 
- * @param y_axis 
+ * @param str the string of text to write on the static I2C screen
+ * @param size the size of the text, either 0,1,2
+ * @param y_axis the pixel number to begin writing text, from 0-64
  */
 void I2C_init_static_text (const char *str, int size, int y_axis);
 
 /**
- * @brief 
+ * @brief Helper function that consolidates a left arrow, EXIT button,
+ * and right arrow into one 'carousel' as a footer to I2C static screens.
  * 
  */
 void I2C_carousel_button_footer ();
 
 void I2C_welcome_screen (state_machine_t *s) {
+  // Load the static screen before selecting a button to hover over
   I2C_welcome_static();
+  // Switch the button to hover over based on the value of current button
   switch (s->buttons->curr_button) {
     case ABOUT_BTN:
+      // Hover over the text written in the static helper function
       hover_text("About", 55, s);
+      // If the button is pressed, switch states
       state_switch(s, ABOUT);
       break;
     case RIGHT_ARROW:
+      // Hover over the drawn arrow
       hover_arrow(RIGHT);
+      // Switch states if button is pressed while hovering over the arrow
       state_switch(s, DIFFICULTY_MODE);
       break;
   }
+  // Display the updated screen
   disp.display();
 }
 
@@ -101,7 +138,6 @@ void I2C_about_screen (state_machine_t *s) {
 }
 
 void I2C_difficulty_mode_screen (state_machine_t *s) {
-  // Call the generic selection screen, with no highlighted buttons. Simulates buttons hovering over a normal screen.
   I2C_difficulty_mode_static();
   switch (s->buttons->curr_button) {
     case EASY_BTN:
@@ -126,7 +162,6 @@ void I2C_difficulty_mode_screen (state_machine_t *s) {
       break;
   }
   state_switch(s, CONFIRM_DIFFICULTY);
-  // Display the screen with button hover
   disp.display();
 }
 

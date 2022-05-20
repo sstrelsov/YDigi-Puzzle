@@ -6,11 +6,10 @@
 #include "state_machine.h"
 #include "init.h"
 
+// Button press type constants
 #define NONE   0
 #define SINGLE 1
 #define LONG   2
-
-#define LONG_PRESS_TIME 400
 
 /**
  * @brief Determines whether the button
@@ -24,14 +23,5 @@
  * (1), NONE (0), LONG (2).
  */
 int read_button_press ();
-
-/**
- * @brief 
- * 
- * @param button_press 
- * @return true 
- * @return false 
- */
-bool any_kind (int button_press);
 
 #endif

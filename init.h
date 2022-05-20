@@ -55,7 +55,6 @@ void init_seven_segment ();
 
 // Button (on encoder)
 #define BUTTON_PIN 3
-#define BUTTON_DEBOUNCE_TIME 50
 
 // Buzzer
 #define BUZZER_PIN 5
