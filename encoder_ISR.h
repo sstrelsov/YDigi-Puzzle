@@ -6,7 +6,6 @@
 
 #include "state_machine.h"
 #include "init.h"
-// SEE IF WE CAN ADD A PARAMETER TO ENCODER_ISR
 
 /**
  * @brief This function serves as an interrupt service handler for the rotary encoder. Its
