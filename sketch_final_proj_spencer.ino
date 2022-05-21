@@ -9,7 +9,6 @@ void setup() {
   init_I2C_display(); /* Initialize the I2C display, clearing screen and getting ready for content */
   init_rotary_encoder(); /* Set the a and b pins of encoder */
   init_encoder_button(); /* Set the button pin of the encoder to passive pullup */
-  init_buzzer(); /* Initialize the buzzer to the proper pin */
   init_seven_segment(); /* TODO */
   
   // Help with interrupts from the Arduino tutorials: https://create.arduino.cc/projecthub/rafitc/interrupts-basics-f475d5
