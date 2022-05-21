@@ -8,7 +8,8 @@
 
 // Let sevseg be used in other files
 extern SevSeg sevseg;
-
+// Get curr_time from the .ino file, allowing it to update constantly throughout the loop to be used in timer_run.
+extern unsigned long curr_time;
 // Set the timer in deciseconds (base units of counting, 1 decimal place after the seconds)
 #define EASY_TIME 1200
 #define MED_TIME 600

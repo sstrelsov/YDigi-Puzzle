@@ -56,8 +56,6 @@ void timer_run (state_machine_t *s) {
 }
 
 void change_time (int dir, state_machine_t *s) {
-  // The current time is a time stamp of millis()
-  static unsigned long curr_time = millis();
   // Create buffer of 100 milliseconds after the current time is stamped
   if (millis() - curr_time >= 100) {
     // If in free mode, count upwards from 0 rather than downwards

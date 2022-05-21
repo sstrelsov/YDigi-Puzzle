@@ -17,8 +17,12 @@ void setup() {
 
 // Create a state_machine struct to navigate the program
 state_machine_t *state_machine = create_state_machine();
+// Create variable to keep track of time stamps throughout the loop for timer_run() in timer.h
+unsigned long curr_time;
 
 void loop() {
+  // The current time is a time stamp of millis()
+  curr_time = millis();
   // Poll the rotary encoder's button for either a single or a long press
   state_machine->buttons->button_press = read_button_press();
   // Switch the current state of the state machine based on user interactions
