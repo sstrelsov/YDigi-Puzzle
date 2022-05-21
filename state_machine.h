@@ -81,22 +81,23 @@ struct _task_t {
 #include "encoder_ISR.h"
 
 /**
- * @brief Create a pointer to a screen_t struct, initializing each member
- * to the values of the WELCOME state – the first state in the program.
- * Sets the current and previous states to WELCOME, the page to PAGE_ZERO,
- * selector to 0, selector range to 2 (2 options on the WELCOME screen),
- * and the button press to NONE.
+ * @brief Create a pointer to a state machine struct, initializing each member
+ * to the values of the WELCOME state – the first state in the program. Initializes
+ * all of the sub-structs by allocating memory to each of state_machine_t, state_t,
+ * page_t, button_t, and task_t and setting initial member values. 
  * 
- * @return a pointer to a screen_t struct, NULL if allocation unsuccesful
+ * @return a pointer to a state_machine_t struct, NULL if allocation unsuccesful.
  */
 state_machine_t *create_state_machine ();
 
 /**
  * @brief Switches the state from the current state to the next 
- * state, updating the screen_t struct s' curr_state and prev_state.
+ * state, updating the state machine's members. Includes provisions
+ * for special switches (to and from help, through paginated states like
+ * about and instructions)
  * 
- * @param s, pointer to screen_t struct s
- * @param next_state, the next state to switch to
+ * @param s pointer to state machine 's'
+ * @param next_state, the next state to which the machine will switch
  */
 void state_switch (state_machine_t *s, state next_state);
 
@@ -104,12 +105,12 @@ void state_switch (state_machine_t *s, state next_state);
  * @brief Switches the page from the current page to the next,
  * useful for states that include multiple pages. Pages are 
  * 0-indexed. For example, the ABOUT state's screen includes 3
- * different screens (pages) that the user can pan through, the
- * initial page being page 0.This function does not modify the
+ * different screens (pages) that the user can cycle through, the
+ * initial page being page 0. This function does not modify the
  * state_machine state, and the function that calls page_switch()
  * assigns s with the number of the last page.
  * 
- * @param s, pointer to screen_t struct s
+ * @param s pointer to state machine 's'
  */
 void page_switch (state_machine_t *s);
 

@@ -49,7 +49,6 @@ void loop() {
       I2C_task_2_screen(state_machine);
       break;
     case TASK_3:
-      // TODO: Change Task 3. Cannot enter numbers on 7-seg while it's counting down
       I2C_task_3_screen(state_machine);
       break;
     case GAME_LOST:

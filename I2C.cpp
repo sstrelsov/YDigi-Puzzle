@@ -121,7 +121,9 @@ void I2C_welcome_screen (state_machine_t *s) {
 }
 
 void I2C_about_screen (state_machine_t *s) {
+  // Set the index of the last page (3 pages on the about screen, 0 indexed)
   s->pages->last_page = 2;
+  // Switch the current page to different static pages
   switch (s->pages->curr_page) {
     case 0:
       I2C_about_initial_static();
@@ -133,7 +135,9 @@ void I2C_about_screen (state_machine_t *s) {
       I2C_about_third_static();
       break;  
     }
+  // Switch page based on button press on left or right arrows, or EXIT button
   page_switch(s);
+  // Display the page
   disp.display();
 }
 
@@ -141,8 +145,10 @@ void I2C_difficulty_mode_screen (state_machine_t *s) {
   I2C_difficulty_mode_static();
   switch (s->buttons->curr_button) {
     case EASY_BTN:
+      // Set the state machine's difficulty mode based on where user hovers
       s->tasks->difficulty_mode = EASY;
       hover_text("Easy", 20, s);
+      // Set the 7-segment display's timer to the difficulty mode's allotted time
       timer_set_seconds(s);
       break;
     case MED_BTN:
@@ -161,7 +167,9 @@ void I2C_difficulty_mode_screen (state_machine_t *s) {
       timer_set_seconds(s);
       break;
   }
+  // Switch to the confirmation state on button press
   state_switch(s, CONFIRM_DIFFICULTY);
+  // Display screen
   disp.display();
 }
 
@@ -169,11 +177,15 @@ void I2C_confirmation_screen(state_machine_t *s) {
   I2C_confirmation_static(s);
   switch (s->buttons->curr_button) {
     case BACK_ARROW:
+      // Hover over the back arrow
       hover_arrow(LEFT);
+      // Switch to difficulty selection on button press
       state_switch(s, DIFFICULTY_MODE);
       break;
     case START:
+      // Hover over the start button
       hover_start();
+      // Switch to the first task on button press
       state_switch(s, TASK_1);
       break;
   }
@@ -181,28 +193,37 @@ void I2C_confirmation_screen(state_machine_t *s) {
 }
 
 void I2C_task_1_screen (state_machine_t *s) {
+  // Display instructions for the task
   I2C_task_1_static();
   switch (s->tasks->task_status) {
+    // Start the task in NOT_STARTED case, setting the timer's seconds
     case NOT_STARTED:
       timer_set_seconds(s);
+      // Switch task to the in progress case
       s->tasks->task_status = IN_PROGRESS;
       break;
     case IN_PROGRESS:
+      // Run the timer
       timer_run(s);
-      // TODO: Test for Task Completion
+      /* *** Tanya's TODO: Test for Task Completion *** */
       break;
     case COMPLETE:
+      // Hover over the next arrow upon task completion
       hover_arrow(RIGHT);
+      // On button press, switch to next task
       state_switch(s, TASK_2);
       break;
     case FAILED:
+      // Switch state to the end of the game
       state_switch(s, GAME_LOST);
       break;
   }
+  // Display the screen
   disp.display();
 }
 
 void I2C_task_2_screen (state_machine_t *s) {
+  // Display task 2 instructions
   I2C_task_2_static();
   switch (s->tasks->task_status) {
     case NOT_STARTED:
@@ -211,20 +232,23 @@ void I2C_task_2_screen (state_machine_t *s) {
       break;
     case IN_PROGRESS:
       timer_run(s);
-      // TODO: Test for Task Completion
+      /* *** Tanya's TODO: Test for Task Completion *** */
       break;
     case COMPLETE:
       hover_arrow(RIGHT);
+      // Switch to task 3 on button press
       state_switch(s, TASK_3);
       break;
     case FAILED:
       state_switch(s, GAME_LOST);
       break;
   }
+  // Display the screen
   disp.display();
 }
 
 void I2C_task_3_screen (state_machine_t *s) {
+  // Display task 3 instructions
   I2C_task_3_static();
   switch (s->tasks->task_status) {
     case NOT_STARTED:
@@ -233,10 +257,11 @@ void I2C_task_3_screen (state_machine_t *s) {
       break;
     case IN_PROGRESS:
       timer_run(s);
-      // TODO: Test for Task Completion
+      /* *** Tanya's TODO: Test for Task Completion *** */
       break;
     case COMPLETE:
       hover_arrow(RIGHT);
+      // On button press, switch to the state for winning the game (congratulations screen)
       state_switch(s, GAME_WON);
       break;
     case FAILED:
@@ -247,25 +272,33 @@ void I2C_task_3_screen (state_machine_t *s) {
 }
 
 void I2C_game_won_screen (state_machine_t *s) {
+  // Display the congratulations screen
   I2C_game_won_static();
+  // Hover over the EXIT button
   hover_exit();
+  // Switch to the end screen
   state_switch(s,END);
   disp.display();
 }
 
 void I2C_game_lost_screen (state_machine_t *s) {
+  // Display the game over screen
   I2C_game_lost_static();
+  // Hover over the TRY AGAIN button at the bottom of the screen
   hover_text("TRY AGAIN", 50, s);
+  // Switch to the end screen.
   state_switch(s,END);
   disp.display();
 }
 
 void I2C_end_screen (state_machine_t *s) {
+  // Display the reset instructions (activating hardward interrupt reset button on Arduino)
   I2C_end_static();
   disp.display();
 }
 
 void I2C_help_screen (state_machine_t *s) {
+  // Display the help menu
   I2C_help_static();
   switch (s->buttons->curr_button) {
     case ABOUT_BTN:
@@ -275,13 +308,16 @@ void I2C_help_screen (state_machine_t *s) {
     case INSTR_BTN:
       hover_text("Instructions", 29, s);
       state_switch(s,INSTRUCTIONS);
-      break; 
+      break;
+    // Resets the program to the WELCOME state
     case RESET_BTN:
       hover_text("Reset", 37, s);
       state_switch(s,WELCOME);
       break;
+    // Switch to the previous state before the help interrupt
     case BACK_BTN:
       hover_text("Back", 45, s);
+      // Go to the previous state of the machine before it entered the help state.
       state_switch(s,s->states->pre_help_curr_state);
       break;
   }
@@ -290,9 +326,9 @@ void I2C_help_screen (state_machine_t *s) {
 }
 
 void I2C_instruction_screen (state_machine_t *s) {
-  // Set page count (0-indexed) to correctly switch pages
+  // Set page count (0-indexed) to correctly switch between 8 pages
   s->pages->last_page = 7;
-  // Switch the static screen, all include the left, exit, and right arrow buttons at bottom
+  // Switch the static screen
   switch (s->pages->curr_page) {
     case 0:
       I2C_instruction_initial_static();
@@ -319,26 +355,28 @@ void I2C_instruction_screen (state_machine_t *s) {
       I2C_instruction_eighth_static();
       break;
     }
-  // Switches page based on which button was pressed
+  // Switch the page using the left, right, and exit arrows
   page_switch(s);
   disp.display();
 }
+
  /*************************************************************************
  *
  *  Static Screen Helper Functions:
- *  - The following are helper functions to make our code more modular.
+ *  - The following are helper functions to make my code more modular.
  *  - Learned about disp.println(); and printing text on display from an
- *    excellent tutorial at
- *    https://www.elithecomputerguy.com/2019/07/print-text-to-oled-screen-on-arduino/
+ *    excellent tutorial at https://www.elithecomputerguy.com/2019/07/print-text-to-oled-screen-on-arduino/
  *
  **************************************************************************
  */
 
 void I2C_init_static_text (const char *str, int size, int y_axis) {
+  // If the y axis is 0, clear the display to wipe the screen, set the color to WHITE as default color for text
   if (y_axis == TOP) {
     disp.clearDisplay();
     disp.setTextColor(WHITE);
   }
+  // Set size, cursor, and print text
   disp.setTextSize(size);
   disp.setCursor(LEFT_INDENT,y_axis);
   disp.println(str);
@@ -401,8 +439,9 @@ void I2C_difficulty_mode_static () {
 }
 
 void I2C_confirmation_static (state_machine_t *s) {
-  // Write heading
+  // Heading stays same regardless of difficulty selected
   I2C_init_static_text("You selected:", SMALL_TXT, TOP);
+  // Switch the body text based on difficulty mode selected
   switch (s->tasks->difficulty_mode) {
     case EASY:
       I2C_init_static_text("EASY", MED_TXT, 20);
@@ -417,7 +456,7 @@ void I2C_confirmation_static (state_machine_t *s) {
       I2C_init_static_text("FREE", MED_TXT, 20);
       break;
   }
-  // Include back button
+  // Include back arrow and start button
   draw_arrow(WHITE,LEFT);
   draw_start(WHITE);
 }
@@ -451,11 +490,12 @@ void I2C_task_3_static () {
 }
 
 void I2C_game_won_static () {
-  // Heading
+  // Congratulations message
   I2C_init_static_text("CONGRATS", MED_TXT, TOP);
   // Body Text
   I2C_init_static_text("You completed all", SMALL_TXT, 20);
   disp.println("the puzzles :)");
+  // Include exit button
   draw_exit(WHITE);
 }
 
@@ -617,7 +657,7 @@ void draw_arrow (uint16_t color, int dir) {
     disp.drawLine(123, 56, 126, 59, color); /* top line */
     disp.drawLine(116, 59, 126, 59, color); /* middle line */
   } else {
-    disp.drawLine(5, 62, 2, 59, color); /*bottom line */
+    disp.drawLine(5, 62, 2, 59, color); /* bottom line */
     disp.drawLine(5, 56, 2, 59, color); /* top line */
     disp.drawLine(12, 59, 2, 59, color); /* middle line */
   }
