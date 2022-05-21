@@ -602,10 +602,10 @@ void I2C_instruction_seventh_static () {
   // Instruction heading
   I2C_init_static_text("INSTRUCTIONS (7/8)", SMALL_TXT, TOP);
   // Instruction content
-  I2C_init_static_text("When all done,", SMALL_TXT, 15);
-  disp.println("the buzzer will");
-  disp.println("sound and the");
-  disp.println("lid will open.");
+  I2C_init_static_text("When all done and", SMALL_TXT, 15);
+  disp.println("the puzzles are");
+  disp.println("fully completed,");
+  disp.println("the lid will open.");
   // Left arrow, EXIT, and right arrow buttons
   I2C_carousel_button_footer();
 }
